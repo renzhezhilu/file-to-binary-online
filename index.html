@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>
+        文件转成二进制形式(base64/)<br>
+        Convert files to binary form
+    </h1>
+    拖入 或
+    <input id="file" type="file">
+
+    <select id="select" name="cars">
+        <option value="base64">base64</option>
+    </select>
+    <hr>
+    <h3 id="loading" style="display: none; color:red">loading...</h3>
+    <br>
+    <h3 id="mes" style="color:blue"></h3>
+    <textarea id="textarea" cols="60" rows="20"></textarea>
+    <!--  -->
+    <script>
+        let input = document.querySelector('#file')
+        // let textarea = document.querySelector('#textarea')
+        let loading = document.querySelector('#loading')
+        let mes = document.querySelector('#mes')
+        let body = document.querySelector('body')
+
+        ////////////////////
+        body.addEventListener('drop', function (e) {
+            e.preventDefault();
+            body.style.border = "none"
+            // console.log();
+            start(e.dataTransfer.files[0])
+
+        })
+        body.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            body.style.border = "13px dotted blue"
+        })
+
+        /////////////////////
+        input.addEventListener('change', function (e) {
+            start(this.files[0])
+        });
+        ////////////////////////
+        function start(file) {
+            loading.style.display = 'block'
+            mes.textContent = ''
+            let reader = new FileReader();
+            reader.onload = function (evt) {
+                // console.log(this.result);
+                let beforeSize = (file.size/1000).toFixed(1) +'Kb'
+                let afterSize = (getTextSize(this.result)/1000).toFixed(1) + 'Kb'
+                mes.textContent = beforeSize +' -> ' + afterSize
+                textarea.textContent = this.result
+                loading.style.display = 'none'
+            };
+            reader.readAsDataURL(file);
+        }
+        function getTextSize(text){
+            return new Blob([text]).size
+        }
+    </script>
+
+    <style>
+    </style>
+</body>
+
+</html>
