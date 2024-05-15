@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>base64-to-file</title>
+  </head>
+
+  <body>
+    <h1>
+      二进制形式(base64/)转成文件<br />
+      Convert binary to files
+    </h1>
+
+    <hr />
+    <h3 id="loading" style="display: none; color: red">loading...</h3>
+    <br />
+    <h3 id="mes" style="color: blue"></h3>
+    <textarea
+      style="width: calc(100% - 30px); margin: 12px"
+      placeholder="base64 text 
+data:application/wasm;base64,AGFzbQEAAA9/AX..."
+      id="textarea"
+      cols="60"
+      rows="20"
+    ></textarea>
+    <br />
+    <button
+      id="startBut"
+      style="width: calc(100% - 30px); margin: 12px; height: 50px"
+    >
+      Start
+    </button>
+    <!--  -->
+    <script>
+      let startBut = document.querySelector("#startBut");
+      let textarea = document.querySelector("#textarea");
+      let loading = document.querySelector("#loading");
+      let mes = document.querySelector("#mes");
+      let body = document.querySelector("body");
+
+      ////////////////////
+
+      /////////////////////
+      startBut.addEventListener("click", function (e) {
+        start();
+      });
+      ////////////////////////
+      async function start() {
+        loading.style.display = "block";
+        mes.textContent = "";
+        let blob = await fetch(textarea.value).then((d) => d.blob());
+        let mime = textarea.value.split(";base64,")[0].split("data:")[1];
+        let suffix = mime.split("/")[1];
+        let name = `${new Date().getTime()}.${suffix}`;
+        let file = new File([blob], name, { type: mime });
+        let url = URL.createObjectURL(file);
+
+        let afterSize = (file.size / 1000).toFixed(1) + "Kb";
+        let beforeSize = (getTextSize(textarea.value) / 1000).toFixed(1) + "Kb";
+        mes.textContent = beforeSize + " -> " + afterSize;
+
+        downloadFile(url, name);
+      }
+      function downloadFile(url, filename) {
+        let link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.target = "_blank";
+        link.click();
+      }
+      function getTextSize(text) {
+        return new Blob([text]).size;
+      }
+    </script>
+
+    <style></style>
+  </body>
+</html>
